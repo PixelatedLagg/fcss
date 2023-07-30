@@ -106,3 +106,5 @@ fragment SPACES
 fragment COMMENT
     : '//' ~[\r\n\f]*
     ;
+
+WS: [ \n\t\r]+ -> skip;
