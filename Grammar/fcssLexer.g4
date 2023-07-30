@@ -2,7 +2,7 @@ lexer grammar fcssLexer;
 
 NAME
     : [a-zA-Z_]
-    : [a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]*
+    | [a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]*
     ;
 
 // Kw
@@ -11,6 +11,7 @@ FALSE:          'false';
 IF:             'if';
 ELSE:           'else';
 ELSE_IF:        'else if';
+NULL:           'null';
 
 INTEGER
     : [1-9] INTEGRAL*
@@ -36,8 +37,9 @@ BOOLEAN
 
 DOT:            '.';
 COMMA:          ',';
-SEMI_COLON      ';';
+SEMI_COLON:     ';';
 ASSIGN:         '=';
+HASHTAG:        '#';    // Token for defining classes
 
 OPEN_PAREN:     '(';
 CLOSE_PAREN:    ')';
