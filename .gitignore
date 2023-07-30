@@ -1,6 +1,9 @@
 # Antlr mess
 *.antlr
 *Playground
+
 Grammar/*
+
+## Include grammar files
 !Grammar/fcssLexer.g4
 !Grammar/fcssParser.g4
