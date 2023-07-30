@@ -1,5 +1,10 @@
 lexer grammar fcssLexer;
 
+NAME
+    : [a-zA-Z_]
+    : [a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]*
+    ;
+
 // Kw
 TRUE:           'true';
 FALSE:          'false';
