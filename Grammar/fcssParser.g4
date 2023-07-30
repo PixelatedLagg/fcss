@@ -18,6 +18,22 @@ assign_stmt
     : name_or_attr EQUALS expr
     ;
 
+if_stmt
+    : 'if' expr '{' block '}'
+    | 'if' '(' expr ')' '{' block '}'
+    ;
+
+else_if_stmt
+    : 'else if' expr '{' block '}'
+    | 'else if' expr '{' block '}'
+    ;
+
+else_stmt
+    : 'else' '{' block '}'
+    ;
+
+block: (assign_stmt | if_stmt | else_if_stmt | else_stmt);
+
 // Selectors
 
 selector_type
@@ -39,7 +55,7 @@ selector_meth
 // Style Defs
 
 generic_style
-    : selector_meth OPEN_BRACE CLOSE_BRACE
+    : selector_meth OPEN_BRACE block CLOSE_BRACE
     ;
 
 // Function Parameters
