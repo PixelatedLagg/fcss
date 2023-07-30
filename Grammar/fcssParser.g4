@@ -27,8 +27,8 @@ selector_type
 
 selector
     : ('[' selector_type? NAME ']')+
-    | ('[*]')+
-    | ('[**]')+
+    | ('[' '*' ']')+
+    | ('[' '*' '*' ']')+
     ;
 
 selector_meth
@@ -63,12 +63,11 @@ passable_arglist
 // Expressions
 
 atoms
-    : 'null'
+    : NULL
     | BOOLEAN
     | INTEGER
     | DOUBLE
     | STRING
-    | '('? atoms ')'?
     ;
 
 expr
@@ -78,4 +77,5 @@ expr
     | expr ('+'|'-') expr
     | expr ('>'|'>='|'<'|'<='|'!='|'==') expr
     | atoms
+    | '(' atoms ')'
     ;
