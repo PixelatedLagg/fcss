@@ -15,7 +15,7 @@ name_or_attr
 // Statements
 
 assign_stmt
-    : name_or_attr EQUALS expr
+    : name_or_attr EQUALS expr ';'
     ;
 
 if_stmt
@@ -84,6 +84,7 @@ atoms
     | INTEGER
     | DOUBLE
     | STRING
+    | name_or_attr
     ;
 
 expr
