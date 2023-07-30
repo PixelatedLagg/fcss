@@ -1,0 +1,5 @@
+array<object>
+{
+    object[] members;
+    int length;
+}

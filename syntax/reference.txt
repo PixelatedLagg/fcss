@@ -1,0 +1,132 @@
+OPERATORS: ----
+
++
+ADD
+left, right
+returns int
+
+-
+SUBTRACT
+left, right
+returns int
+
+*
+MULTIPLY
+left, right
+returns int
+
+/
+DIVIDED
+left, right
+returns int
+
+%
+MODULO
+left, right
+returns int
+
+_
+FLOOR
+object
+returns int
+
+^
+CEILING
+object
+returns int
+
+>
+GREATER
+left, right
+returns bool
+
+<
+LESS
+left, right
+returns bool
+
+>=
+GREATER_EQUAL
+left, right
+returns bool
+
+<=
+LESS_EQUAL
+left, right
+returns bool
+
+==
+EQUAL
+left, right
+returns bool
+
+!=
+UNEQUAL
+left, right
+returns bool
+
+||
+OR
+left, right
+returns bool
+
+&&
+AND
+left, right
+returns bool
+
+!
+OPPOSITE
+object
+returns bool
+
+METHODS: ----
+
+set(name, value);
+SET VARIABLE - if name doesnt exist, create; if name exists, set
+returns void
+
+get(name);
+GET VARIABLE - if name doesnt exist, return null; if name exists, return value
+returns value
+
+VALUES: ----
+
+INTEGER
+
+DOUBLE
+
+STRING
+
+BOOL
+
+CONDITIONALS: ----
+
+if () {}
+
+else () {}
+
+if else () {}
+
+SELECTORS: ----
+
+[tag]
+
+[#ID]
+
+[.class]
+
+||
+OR
+left, right
+returns both arrays of identifiers
+
+&&
+AND
+left, right
+returns array of elements with only both identifiers
+
+!
+OPPOSITE
+object
+returns array of elements without identifier

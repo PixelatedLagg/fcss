@@ -1,0 +1,20 @@
+element
+{
+    element parent;
+    element_array children;
+    color background;
+    color foreground;
+    position_mode position_mode;
+    int width;
+    int height;
+    (int, int) top_left;
+    (int, int) top_right;
+    (int, int) bottom_left;
+    (int, int) bottom_right;
+    (int, int) position;
+    string id;
+    string class;
+    string tag;
+    shadow shadow;
+    event[] events;
+}

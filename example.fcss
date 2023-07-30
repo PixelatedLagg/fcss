@@ -1,0 +1,4 @@
+[div][*][.identifier].init(element)
+{
+    //stuff
+}
