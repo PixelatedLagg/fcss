@@ -1,0 +1,3 @@
+[div][#my_class].init {
+    this.width = 90;
+}
