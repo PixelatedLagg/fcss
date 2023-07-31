@@ -1,12 +1,12 @@
 *.vscode
 
 # CMake mess
-Compiler/cmake/*
+Parser/cmake/*
 
-!Compiler/cmake/ExternalAntlr4Cpp.cmake
-!Compiler/cmake/findANTLR.cmake
-!Compiler/cmake/antlr4-generator.cmake.in
-!Compiler/cmake/antlr4-runtime.cmake.in
+!Parser/cmake/ExternalAntlr4Cpp.cmake
+!Parser/cmake/findANTLR.cmake
+!Parser/cmake/antlr4-generator.cmake.in
+!Parser/cmake/antlr4-runtime.cmake.in
 
 # Antlr mess
 *.antlr

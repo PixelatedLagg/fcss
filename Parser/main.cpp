@@ -8,5 +8,5 @@ target files found in `include/antlr` should be validated beforehand using the `
 #include "antlr4-runtime/fcssParser.h"
 
 
-namespace fcss::Compiler {
+namespace fcss::Parser {
 }
