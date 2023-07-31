@@ -1,20 +1,33 @@
 element
 {
-    element parent;
-    element_array children;
-    color background;
-    color foreground;
-    position_mode position_mode;
-    int width;
-    int height;
-    (int, int) top_left;
-    (int, int) top_right;
-    (int, int) bottom_left;
-    (int, int) bottom_right;
-    (int, int) position;
-    string id;
-    string class;
-    string tag;
-    shadow shadow;
-    event[] events;
+    element parent; //get
+    element_array children; //get
+    string id; //get
+    string class; //get
+    string tag; //get
+    event[] events; //get
+
+    position_mode position_mode; //set - either stick_to_screen or flow_top_down
+    int width; //set - change will always affect farthest from bottom_left
+    int height; //set - change will always affect farthest from bottom_left
+    int inner_width; //get
+    int inner_height; //get
+    int z_index; //set
+    (int, int) top_left; //get
+    (int, int) top_right; //get
+    (int, int) bottom_left; //get
+    (int, int) bottom_right; //get
+    (int, int) inner_top_left; //get
+    (int, int) inner_top_right; //get
+    (int, int) inner_bottom_left; //get
+    (int, int) inner_bottom_right; //get
+    (int, int) center; //get
+    (int, int) position; //set - always equal to bottom_left; will affect everything
+    
+    int round_corners; //set - 0 is default; doesnt change any corner positions, object still takes up same area
+    double opacity; //set - 0 is hidden, 1 is visible
+    color background; //set
+    color foreground; //set
+    border border; //set - color, thickness; (border object will claculate where inner corners are etc)
+    shadow shadow; //set - x offset, y offset, color, thickness, fade distance
 }

@@ -1,0 +1,5 @@
+screen
+{
+    int width;
+    int height;
+}
