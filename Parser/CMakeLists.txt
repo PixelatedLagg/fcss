@@ -1,5 +1,12 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7 FATAL_ERROR)
 
+project("fcssProcessor"
+        VERSION
+            "0.0.1"
+        DESCRIPTION
+            "Processor for working with the fcss language"
+)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # compiler must be 17
@@ -18,7 +25,7 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 
 # set variable pointing to the antlr tool that supports C++
 # this is not required if the jar file can be found under PATH environment
-set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}../Jars/antlr-4.13.0-complete.jar)
+set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/../Jars/antlr-4.13.0-complete.jar)
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 
