@@ -1,3 +1,13 @@
+*.vscode
+
+# CMake mess
+Compiler/cmake/*
+
+!Compiler/cmake/ExternalAntlr4Cpp.cmake
+!Compiler/cmake/findANTLR.cmake
+!Compiler/cmake/antlr4-generator.cmake.in
+!Compiler/cmake/antlr4-runtime.cmake.in
+
 # Antlr mess
 *.antlr
 *Playground
