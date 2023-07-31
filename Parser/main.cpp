@@ -3,10 +3,6 @@ target files found in `include/antlr` should be validated beforehand using the `
 */
 
 #include <stdio.h>
-#include "antlr4-runtime/antlr4-runtime.h"
-#include "antlr4-runtime/fcssLexer.h"
-#include "antlr4-runtime/fcssParser.h"
-
 
 namespace fcss::Parser {
 }
