@@ -1,19 +1,4 @@
 *.vscode
 
-# CMake mess
-Parser/cmake/*
-
-!Parser/cmake/ExternalAntlr4Cpp.cmake
-!Parser/cmake/findANTLR.cmake
-!Parser/cmake/antlr4-generator.cmake.in
-!Parser/cmake/antlr4-runtime.cmake.in
-
-# Antlr mess
-*.antlr
-*Playground
-
-Grammar/*
-
-## Include grammar files
-!Grammar/fcssLexer.g4
-!Grammar/fcssParser.g4
+*bin
+*.antlr4
