@@ -1,7 +1,9 @@
 *.vscode
-
-bin/*
+cmake/*
 *.antlr4
 
 ## Exclusions
-!bin/antlr4_runtime
+!cmake/antlr4-generator.cmake.in
+!cmake/antlr4-runtime.cmake.in
+!cmake/ExternalAntlr4Cpp.make
+!cmake/FindANTLR.cmake

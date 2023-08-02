@@ -225,15 +225,15 @@ endif()
 
 
 # Call macro to add lexer and grammar to your build dependencies.
-antlr_target(fcssLexer ../Grammar/fcssLexer.g4 LEXER OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/)
-antlr_target(fcssLexer ../Grammar/fcssParser.g4 PARSER OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/)
+antlr_target(fcssLexer ${CMAKE_CURRENT_SOURCE_DIR}/../Grammar/fcssLexer.g4 LEXER OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/)
+antlr_target(fcssLexer ${CMAKE_CURRENT_SOURCE_DIR}/../Grammar/fcssParser.g4 PARSER OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/)
 
 # add our project source directories
 include_directories(${PROJECT_SOURCE_DIR}
 					 ${PROJECT_SOURCE_DIR}/libs/
 )
 
-add_executable(fcssParser ./src/main.cpp ./src/fcssNodes.cpp ./src/fcssVisitor.cpp               
+add_executable(fcssParser ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/fcssNodes.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/fcssVisitor.cpp               
                ${ANTLR_SceneGrammarParser_CXX_OUTPUTS})
 
 # link required libraries
