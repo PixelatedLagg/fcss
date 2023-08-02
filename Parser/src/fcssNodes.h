@@ -1,4 +1,5 @@
 #include <string>
+#include <list>
 
 enum _PositionMode { StickToScreen, FlowTopDown };
 
@@ -50,7 +51,7 @@ class Element {
     std::string Tag;
 
     Element Parent;
-    Element[] Children;
+    std::list<Element> Children;
     std::string Id;
     std::string Class;
 
@@ -82,4 +83,8 @@ class Element {
     _Colour Foreground;
     _Border Border;
     _Shadow Shadow;
+
+    void AddChild(Element Child);
+    void SetWidth(int NewWidth);
+    void SetHeight(int NewHeight);
 }
