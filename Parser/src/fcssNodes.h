@@ -22,13 +22,13 @@ struct _Thickness {
     double Right;
     double Top;
     double Bottom;
-}
+};
 
 
 struct _Border {
     _Colour Colour;
     _Thickness Thickness;
-}
+};
 
 
 struct _Shadow {
@@ -36,7 +36,7 @@ struct _Shadow {
     _Colour Colour;
     _Thickness Thickness;
     double FadeDistance;
-}
+};
 
 
 class Event {
@@ -44,18 +44,18 @@ class Event {
 
     // TODO: Optional parameters to be passed
     int Call();
-}
+};
 
 
 class Element {
     std::string Tag;
 
-    Element Parent;
-    std::list<Element> Children;
+    Element *Parent;
+    std::list<Element*> Children;
     std::string Id;
     std::string Class;
 
-    Event[] Events;
+    std::list<Event*> Events;
     _PositionMode PositionMode;
 
     int Width;
@@ -84,7 +84,13 @@ class Element {
     _Border Border;
     _Shadow Shadow;
 
-    void AddChild(Element Child);
+    Element(Element* Parent, int Width, int Height, Point2D Origin);
+
+    void AddChild(Element* Child);
+
     void SetWidth(int NewWidth);
     void SetHeight(int NewHeight);
-}
+
+    void SetInnerWidth(int InnerWidth);
+    void SetInnerHeight(int InnerHeight);
+};

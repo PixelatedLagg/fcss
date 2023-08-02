@@ -1,6 +1,6 @@
 #include "fcssNodes.h"
 
-Element::Element(Element Parent, int Width, int Height, Point2D Origin) {
+Element::Element(Element* Parent, int Width, int Height, Point2D Origin) {
     // Other elements can be manually set
     this->Parent = Parent;
     this->Width = Width;
@@ -22,8 +22,8 @@ Element::Element(Element Parent, int Width, int Height, Point2D Origin) {
     this->Center.y = (Origin.y + Height) / 2;
 }
 
-void Element::AddChild(Element Child) {
-    Child.Parent = this;
+void Element::AddChild(Element* Child) {
+    Child->Parent = this;
     Children.push_back(Child);
 }
 
@@ -31,7 +31,7 @@ void Element::SetHeight(int Height) {
     this->Height = Height;
 
     this->BottomLeft.y = this->Origin.y + Height;
-    this->BottomRight.y = this->Origin.y + Height 
+    this->BottomRight.y = this->Origin.y + Height;
 }
 
 void Element::SetWidth(int Width) {
