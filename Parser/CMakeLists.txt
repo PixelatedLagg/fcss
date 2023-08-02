@@ -237,24 +237,4 @@ add_executable(fcssParser ./src/main.cpp ./src/fcssNodes.cpp ./src/fcssVisitor.c
                ${ANTLR_SceneGrammarParser_CXX_OUTPUTS})
 
 # link required libraries
-target_link_libraries(antlr4-tutorial antlr4_static ${SYSTEM_LIBS})
-
-# copy the input file next to the generated executable
-add_custom_command(TARGET antlr4-tutorial POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/input.scene"
-  $<TARGET_FILE_DIR:antlr4-tutorial>)
-
-# necessary because the default working directory of Visual Studio
-# is not the same as the one in which the binary is created
-# so we copy the input file twice:
-# one for when you launch the executale in Visual Studio (CTRL+F5)
-# one for when you launch it normally
-if (WIN32)
-add_custom_command(TARGET antlr4-tutorial POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/input.scene"
-  $<TARGET_FILE_DIR:antlr4-tutorial>/../)
-endif()
-
-
+target_link_libraries(fcssParser antlr4_static ${SYSTEM_LIBS})
