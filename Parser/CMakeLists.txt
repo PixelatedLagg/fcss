@@ -71,10 +71,6 @@ SET(CIMG_MAGICK_CCFLAGS -Dcimg_use_magick)
 SET(CIMG_FFTW3_CCFLAGS  -Dcimg_use_fftw3)
 
 # ### Search Additional Libraries ##########
-FIND_PACKAGE(OpenCV)
-FIND_PACKAGE(JPEG)
-FIND_PACKAGE(TIFF)
-FIND_PACKAGE(PNG)
 FIND_PACKAGE(ZLIB)
 FIND_PACKAGE(LAPACK)
 FIND_PACKAGE(BLAS)
@@ -92,35 +88,12 @@ endif()
 
 
 ### Configure Paths according to detected packages
-if(TIFF_FOUND)
-  get_filename_component(TIFF_LIB_DIRS ${TIFF_LIBRARIES} PATH)
-  SET(CIMG_CFLAGS "${CIMG_CFLAGS} ${CIMG_TIFF_CCFLAGS}")
-  link_directories(${TIFF_LIB_DIRS})
-  include_directories(${TIFF_INCLUDE_DIR})
-  SET(SYSTEM_LIBS ${SYSTEM_LIBS} ${TIFF_LIBRARIES})
-endif()
-
-if(JPEG_FOUND)
-  get_filename_component(JPEG_LIB_DIRS ${JPEG_LIBRARIES} PATH)
-  SET(CIMG_CFLAGS "${CIMG_CFLAGS} ${CIMG_JPEG_CCFLAGS}")
-  link_directories(${JPEG_LIB_DIRS})
-  include_directories(${JPEG_INCLUDE_DIR})
-  SET(SYSTEM_LIBS ${SYSTEM_LIBS} ${JPEG_LIBRARIES})
-endif()
 
 if (ZLIB_FOUND)
   SET(CIMG_CFLAGS "${CIMG_CFLAGS} ${CIMG_ZLIB_CCFLAGS}")
   link_directories(${ZLIB_LIB_DIRS})
   include_directories(${ZLIB_INCLUDE_DIR})
   SET(SYSTEM_LIBS ${SYSTEM_LIBS} ${ZLIB_LIBRARIES})
-
-  # PNG requires ZLIB
-  if(PNG_FOUND)
-    SET(CIMG_CFLAGS "${CIMG_CFLAGS} ${CIMG_PNG_CCFLAGS}")
-    link_directories(${PNG_LIB_DIRS})
-    include_directories(${PNG_INCLUDE_DIR} )
-    SET( SYSTEM_LIBS ${SYSTEM_LIBS} ${PNG_LIBRARIES} )
-  endif()
 endif()
 
 if(FFTW3_FOUND)
@@ -226,14 +199,14 @@ endif()
 
 # Call macro to add lexer and grammar to your build dependencies.
 antlr_target(fcssLexer ${CMAKE_CURRENT_SOURCE_DIR}/../Grammar/fcssLexer.g4 LEXER OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/)
-antlr_target(fcssLexer ${CMAKE_CURRENT_SOURCE_DIR}/../Grammar/fcssParser.g4 PARSER OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/)
+antlr_target(fcssLexer ${CMAKE_CURRENT_SOURCE_DIR}/../Grammar/fcssParser.g4 PARSER VISITOR OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs/)
 
 # add our project source directories
 include_directories(${PROJECT_SOURCE_DIR}
-					 ${PROJECT_SOURCE_DIR}/libs/
+                    ${PROJECT_SOURCE_DIR}/libs/
 )
 
-add_executable(fcssParser ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/fcssNodes.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/fcssVisitor.cpp               
+add_executable(fcssParser ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp              
                ${ANTLR_SceneGrammarParser_CXX_OUTPUTS})
 
 # link required libraries
