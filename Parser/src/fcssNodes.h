@@ -87,9 +87,11 @@ class Element {
     Element(Element* Parent, int Width, int Height, Point2D Origin);
 
     void AddChild(Element* Child);
+    void AddEvent(Event* _Event);
 
     void SetWidth(int NewWidth);
     void SetHeight(int NewHeight);
+    void SetZIndex(int ZIndex);
 
     void SetInnerWidth(int InnerWidth);
     void SetInnerHeight(int InnerHeight);

@@ -27,9 +27,12 @@ void Element::AddChild(Element* Child) {
     Children.push_back(Child);
 }
 
+void Element::AddEvent(Event* _Event) {
+    Events.push_back(_Event);
+}
+
 void Element::SetHeight(int Height) {
     this->Height = Height;
-
     this->BottomLeft.y = this->Origin.y + Height;
     this->BottomRight.y = this->Origin.y + Height;
 }
@@ -38,4 +41,28 @@ void Element::SetWidth(int Width) {
     this->Width = Width;
     this->TopRight.x = this->Origin.x + Width;
     this->BottomRight.x = this->Origin.x + Width;
+}
+
+void Element::SetZIndex(int ZIndex) {
+    this->ZIndex = ZIndex;
+}
+
+void Element::SetInnerWidth(int InnerWidth) {
+    this->InnerWidth = InnerWidth;
+
+    this->InnerTopLeft.x = this->Origin.x + InnerWidth;
+    this->InnerTopRight.x = this->TopRight.x - InnerWidth;
+
+    this->InnerBottomLeft.x = this->Origin.x + InnerWidth;
+    this->InnerBottomRight.x = this->BottomRight.x - InnerWidth;
+}
+
+void Element::SetInnerHeight(int InnerHeight) {
+    this->InnerHeight = InnerHeight;
+
+    this->InnerTopLeft.y = this->Origin.y + InnerHeight;
+    this->InnerTopRight.y = this->Origin.y + InnerHeight;
+
+    this->InnerBottomLeft.y = this->BottomLeft.y - InnerHeight;
+    this->InnerBottomRight.y = this->BottomRight.y - InnerHeight;
 }
