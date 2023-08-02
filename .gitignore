@@ -1,4 +1,7 @@
 *.vscode
 
-*bin
+bin/*
 *.antlr4
+
+## Exclusions
+!bin/antlr4_runtime
