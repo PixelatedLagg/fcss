@@ -5,11 +5,11 @@
 #include <iostream>
 
 #include "antlr4-runtime.h"
-#include "libs/fcssLexer.h"
-#include "libs/fcssParser.h"
-#include "fcssVisitor.h"
+#include "fcssLexer.h"
+#include "fcssParser.h"
+#include "fcssParserBaseVisitor.h"
 
 
 int main(int argc, const char* argv[]) {
-    cout << 'Working!\n';
+    std::cout << "Working!\n";
 }
