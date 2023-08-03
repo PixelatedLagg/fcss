@@ -105,5 +105,11 @@ namespace fcss::Parser {
         void SetBackground(int R, int G, int B);
         void SetBackground(int R, int G, int B, double A);
         void SetBackground(_Colour Colour);
+        void SetBackground(std::string HexString);
+
+        void SetForeground(int R, int G, int B);
+        void SetForeground(int R, int G, int B, double A);
+        void SetForeground(_Colour Colour);
+        void SetForeground(std::string HexString);
     };
 }

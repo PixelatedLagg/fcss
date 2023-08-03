@@ -1,6 +1,24 @@
 #include "fcssNodes.h"
 
 namespace fcss::Parser {
+    _Colour ColourFromHex(std::string HexString) {
+        HexString = HexString.substr(1);
+        if (HexString.length() == 3) {
+            HexString = HexString + HexString;
+        }
+
+        int R, G, B;
+        std::sscanf(HexString.c_str(), "%02x%02x%02x", &R, &G, &B);
+
+        _Colour Colour;
+        Colour.R = R;
+        Colour.G = G;
+        Colour.B = B;
+        Colour.A = 1;
+
+        return Colour;
+    }
+
     Element::Element(Element* Parent, std::string Tag, int Width, int Height, Point2D Origin) {
         // Other elements can be manually set
         this->Parent = Parent;
@@ -113,4 +131,38 @@ namespace fcss::Parser {
     void Element::SetBackground(_Colour Colour) {
         this->Background = Colour;
     }
+
+    void Element::SetBackground(std::string HexString) {
+        _Colour Colour = ColourFromHex(HexString);
+        this->Foreground = Colour;
+    }
+
+    void Element::SetForeground(int R, int G, int B) {
+        _Colour Colour;
+        Colour.R = R;
+        Colour.G = G;
+        Colour.B = B;
+        Colour.A = 1;
+
+        this->Foreground = Colour;
+    }
+
+    void Element::SetForeground(int R, int G, int B, double A) {
+        _Colour Colour;
+        Colour.R = R;
+        Colour.G = G;
+        Colour.B = B;
+        Colour.A = A;
+
+        this->Foreground = Colour;
+    }
+
+    void Element::SetForeground(_Colour Colour) {
+        this->Background = Colour;
+    }
+
+    void Element::SetForeground(std::string HexString) {
+        _Colour Colour = ColourFromHex(HexString);
+        this->Foreground = Colour;
+    }    
 }
