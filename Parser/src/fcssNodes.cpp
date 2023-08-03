@@ -1,114 +1,116 @@
 #include "fcssNodes.h"
 
-Element::Element(Element* Parent, std::string Tag, int Width, int Height, Point2D Origin) {
-    // Other elements can be manually set
-    this->Parent = Parent;
-    this->Tag = Tag;
-    this->Width = Width;
-    this->Height = Height;
-    this->Origin = Origin;
+namespace fcss::Parser {
+    Element::Element(Element* Parent, std::string Tag, int Width, int Height, Point2D Origin) {
+        // Other elements can be manually set
+        this->Parent = Parent;
+        this->Tag = Tag;
+        this->Width = Width;
+        this->Height = Height;
+        this->Origin = Origin;
 
-    this->TopLeft = Origin;
+        this->TopLeft = Origin;
 
-    this->BottomLeft.x = Origin.x;
-    this->BottomLeft.y = Origin.y + Height;
+        this->BottomLeft.x = Origin.x;
+        this->BottomLeft.y = Origin.y + Height;
 
-    this->TopRight.x = Origin.x + Width;
-    this->TopRight.y = Origin.y;
+        this->TopRight.x = Origin.x + Width;
+        this->TopRight.y = Origin.y;
 
-    this->BottomRight.x = Origin.x + Width;
-    this->BottomRight.y = Origin.y + Height;
+        this->BottomRight.x = Origin.x + Width;
+        this->BottomRight.y = Origin.y + Height;
 
-    this->Center.x = (Origin.x + Width) / 2;
-    this->Center.y = (Origin.y + Height) / 2;
-}
+        this->Center.x = (Origin.x + Width) / 2;
+        this->Center.y = (Origin.y + Height) / 2;
+    }
 
-Element::Element(Element* Parent, std::string Tag) {
-    this->Parent = Parent;
-    this->Tag = Tag;
-}
+    Element::Element(Element* Parent, std::string Tag) {
+        this->Parent = Parent;
+        this->Tag = Tag;
+    }
 
-void Element::AddChild(Element* Child) {
-    Child->Parent = this;
-    Children.push_back(Child);
-}
+    void Element::AddChild(Element* Child) {
+        Child->Parent = this;
+        Children.push_back(Child);
+    }
 
-void Element::AddEvent(Event* _Event) {
-    Events.push_back(_Event);
-}
+    void Element::AddEvent(Event* _Event) {
+        Events.push_back(_Event);
+    }
 
-void Element::SetOrigin(Point2D Origin) {
-    this->Origin = Origin;
-    this->TopLeft = Origin;
+    void Element::SetOrigin(Point2D Origin) {
+        this->Origin = Origin;
+        this->TopLeft = Origin;
 
-    this->SetHeight(this->Height);
-    this->SetWidth(this->Width);
-}
+        this->SetHeight(this->Height);
+        this->SetWidth(this->Width);
+    }
 
-void Element::SetPositionMode(_PositionMode PositionMode) {
-    this->PositionMode = PositionMode;
-}
+    void Element::SetPositionMode(_PositionMode PositionMode) {
+        this->PositionMode = PositionMode;
+    }
 
-void Element::SetHeight(int Height) {
-    this->Height = Height;
-    this->BottomLeft.y = this->Origin.y + Height;
-    this->BottomRight.y = this->Origin.y + Height;
+    void Element::SetHeight(int Height) {
+        this->Height = Height;
+        this->BottomLeft.y = this->Origin.y + Height;
+        this->BottomRight.y = this->Origin.y + Height;
 
-    this->SetInnerHeight(this->InnerHeight);
-}
+        this->SetInnerHeight(this->InnerHeight);
+    }
 
-void Element::SetWidth(int Width) {
-    this->Width = Width;
-    this->TopRight.x = this->Origin.x + Width;
-    this->BottomRight.x = this->Origin.x + Width;
+    void Element::SetWidth(int Width) {
+        this->Width = Width;
+        this->TopRight.x = this->Origin.x + Width;
+        this->BottomRight.x = this->Origin.x + Width;
 
-    this->SetInnerWidth(this->InnerWidth);
-}
+        this->SetInnerWidth(this->InnerWidth);
+    }
 
-void Element::SetZIndex(int ZIndex) {
-    this->ZIndex = ZIndex;
-}
+    void Element::SetZIndex(int ZIndex) {
+        this->ZIndex = ZIndex;
+    }
 
-void Element::SetInnerWidth(int InnerWidth) {
-    this->InnerWidth = InnerWidth;
+    void Element::SetInnerWidth(int InnerWidth) {
+        this->InnerWidth = InnerWidth;
 
-    this->InnerTopLeft.x = this->Origin.x + InnerWidth;
-    this->InnerTopRight.x = this->TopRight.x - InnerWidth;
+        this->InnerTopLeft.x = this->Origin.x + InnerWidth;
+        this->InnerTopRight.x = this->TopRight.x - InnerWidth;
 
-    this->InnerBottomLeft.x = this->Origin.x + InnerWidth;
-    this->InnerBottomRight.x = this->BottomRight.x - InnerWidth;
-}
+        this->InnerBottomLeft.x = this->Origin.x + InnerWidth;
+        this->InnerBottomRight.x = this->BottomRight.x - InnerWidth;
+    }
 
-void Element::SetInnerHeight(int InnerHeight) {
-    this->InnerHeight = InnerHeight;
+    void Element::SetInnerHeight(int InnerHeight) {
+        this->InnerHeight = InnerHeight;
 
-    this->InnerTopLeft.y = this->Origin.y + InnerHeight;
-    this->InnerTopRight.y = this->Origin.y + InnerHeight;
+        this->InnerTopLeft.y = this->Origin.y + InnerHeight;
+        this->InnerTopRight.y = this->Origin.y + InnerHeight;
 
-    this->InnerBottomLeft.y = this->BottomLeft.y - InnerHeight;
-    this->InnerBottomRight.y = this->BottomRight.y - InnerHeight;
-}
+        this->InnerBottomLeft.y = this->BottomLeft.y - InnerHeight;
+        this->InnerBottomRight.y = this->BottomRight.y - InnerHeight;
+    }
 
-void Element::SetBackground(int R, int G, int B) {
-    _Colour Colour;
-    Colour.R = R;
-    Colour.G = G;
-    Colour.B = B;
-    Colour.A = 1;
+    void Element::SetBackground(int R, int G, int B) {
+        _Colour Colour;
+        Colour.R = R;
+        Colour.G = G;
+        Colour.B = B;
+        Colour.A = 1;
 
-    this->Background = Colour;
-}
+        this->Background = Colour;
+    }
 
-void Element::SetBackground(int R, int G, int B, double A) {
-    _Colour Colour;
-    Colour.R = R;
-    Colour.G = G;
-    Colour.B = B;
-    Colour.A = A;
+    void Element::SetBackground(int R, int G, int B, double A) {
+        _Colour Colour;
+        Colour.R = R;
+        Colour.G = G;
+        Colour.B = B;
+        Colour.A = A;
 
-    this->Background = Colour;
-}
+        this->Background = Colour;
+    }
 
-void Element::SetBackground(_Colour Colour) {
-    this->Background = Colour;
+    void Element::SetBackground(_Colour Colour) {
+        this->Background = Colour;
+    }
 }
