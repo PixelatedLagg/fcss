@@ -45,6 +45,10 @@ void Element::SetOrigin(Point2D Origin) {
     this->SetWidth(this->Width);
 }
 
+void Element::SetPositionMode(_PositionMode PositionMode) {
+    this->PositionMode = PositionMode;
+}
+
 void Element::SetHeight(int Height) {
     this->Height = Height;
     this->BottomLeft.y = this->Origin.y + Height;
@@ -83,4 +87,28 @@ void Element::SetInnerHeight(int InnerHeight) {
 
     this->InnerBottomLeft.y = this->BottomLeft.y - InnerHeight;
     this->InnerBottomRight.y = this->BottomRight.y - InnerHeight;
+}
+
+void Element::SetBackground(int R, int G, int B) {
+    _Colour Colour;
+    Colour.R = R;
+    Colour.G = G;
+    Colour.B = B;
+    Colour.A = 1;
+
+    this->Background = Colour;
+}
+
+void Element::SetBackground(int R, int G, int B, double A) {
+    _Colour Colour;
+    Colour.R = R;
+    Colour.G = G;
+    Colour.B = B;
+    Colour.A = A;
+
+    this->Background = Colour;
+}
+
+void Element::SetBackground(_Colour Colour) {
+    this->Background = Colour;
 }

@@ -14,6 +14,7 @@ struct _Colour {
     int R;
     int G;
     int B;
+    double A;
 };
 
 
@@ -91,6 +92,7 @@ class Element {
     void AddEvent(Event* _Event);
 
     void SetOrigin(Point2D Origin);
+    void SetPositionMode(_PositionMode PositionMode);
 
     void SetWidth(int NewWidth);
     void SetHeight(int NewHeight);
@@ -98,4 +100,8 @@ class Element {
 
     void SetInnerWidth(int InnerWidth);
     void SetInnerHeight(int InnerHeight);
+
+    void SetBackground(int R, int G, int B);
+    void SetBackground(int R, int G, int B, int, A);
+    void SetBackground(_Colour Colour);
 };
