@@ -1,8 +1,9 @@
 #include "fcssNodes.h"
 
-Element::Element(Element* Parent, int Width, int Height, Point2D Origin) {
+Element::Element(Element* Parent, std::string Tag, int Width, int Height, Point2D Origin) {
     // Other elements can be manually set
     this->Parent = Parent;
+    this->Tag = Tag;
     this->Width = Width;
     this->Height = Height;
     this->Origin = Origin;
@@ -22,6 +23,11 @@ Element::Element(Element* Parent, int Width, int Height, Point2D Origin) {
     this->Center.y = (Origin.y + Height) / 2;
 }
 
+Element::Element(Element* Parent, std::string Tag) {
+    this->Parent = Parent;
+    this->Tag = Tag;
+}
+
 void Element::AddChild(Element* Child) {
     Child->Parent = this;
     Children.push_back(Child);
@@ -31,16 +37,28 @@ void Element::AddEvent(Event* _Event) {
     Events.push_back(_Event);
 }
 
+void Element::SetOrigin(Point2D Origin) {
+    this->Origin = Origin;
+    this->TopLeft = Origin;
+
+    this->SetHeight(this->Height);
+    this->SetWidth(this->Width);
+}
+
 void Element::SetHeight(int Height) {
     this->Height = Height;
     this->BottomLeft.y = this->Origin.y + Height;
     this->BottomRight.y = this->Origin.y + Height;
+
+    this->SetInnerHeight(this->InnerHeight);
 }
 
 void Element::SetWidth(int Width) {
     this->Width = Width;
     this->TopRight.x = this->Origin.x + Width;
     this->BottomRight.x = this->Origin.x + Width;
+
+    this->SetInnerWidth(this->InnerWidth);
 }
 
 void Element::SetZIndex(int ZIndex) {

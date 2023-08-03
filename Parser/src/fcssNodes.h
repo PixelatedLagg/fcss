@@ -84,10 +84,13 @@ class Element {
     _Border Border;
     _Shadow Shadow;
 
-    Element(Element* Parent, int Width, int Height, Point2D Origin);
+    Element(Element* Parent, std::string Tag, int Width, int Height, Point2D Origin);
+    Element(Element* Parent, std::string Tag);
 
     void AddChild(Element* Child);
     void AddEvent(Event* _Event);
+
+    void SetOrigin(Point2D Origin);
 
     void SetWidth(int NewWidth);
     void SetHeight(int NewHeight);
