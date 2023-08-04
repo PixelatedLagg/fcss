@@ -4,6 +4,12 @@ options {
     tokenVocab=fcssLexer;
 }
 
+// Prog - Defines how code in the file may be written
+prog
+    : generic_style
+    ;
+
+
 attr
     : NAME ('.' NAME)+
     ;
@@ -15,7 +21,7 @@ name_or_attr
 // Statements
 
 assign_stmt
-    : name_or_attr EQUALS expr ';'
+    : name_or_attr '=' expr ';'
     ;
 
 if_stmt
@@ -32,7 +38,14 @@ else_stmt
     : 'else' '{' block '}'
     ;
 
-block: (assign_stmt | if_stmt | else_if_stmt | else_stmt);
+if_else_block
+    : if_stmt (else_if_stmt)*? (else_stmt)?
+    ;
+
+block
+    : assign_stmt
+    | if_else_block
+    ;
 
 // Selectors
 
@@ -50,12 +63,13 @@ selector
 selector_meth
     : selector '.' NAME
     | selector '.' NAME parameters
+    | selector
     ;
 
 // Style Defs
 
 generic_style
-    : selector_meth OPEN_BRACE block CLOSE_BRACE
+    : selector_meth '{' block '}'
     ;
 
 // Function Parameters
