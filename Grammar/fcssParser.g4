@@ -6,7 +6,11 @@ options {
 
 // Trees
 tree
-    : (assign_stmt | append_stmt | conditional_block | selector)*
+    : (assign_stmt | append_stmt | conditional_block)*
+    ;
+
+main_tree
+    : selector
     ;
 
 // Basic atoms/expressions
@@ -16,12 +20,8 @@ attribute
     ;
 
 // TODO: Write param spec for passing parameters in functions
-param_spec
-    : ((atom)*? (',' (atom)*?)+ (',')?)
-    ;
-
 function_call
-    : attribute '(' param_spec ')'
+    : attribute '(' ')'
     ;
 
 atom
@@ -85,7 +85,15 @@ selector_name
     | wildcard=('*'|'**')
     ;
 
+selector_pattern
+    : selector_name operand='||' selector_name
+    | selector_name operand='&&' selector_name
+    | unary='!' selector_name
+    | unary='!' '(' selector_name ')'
+    | selector_name
+    ;
+
 selector
-    : '[' selector_name ']' '{' tree '}'
-    | '[' selector_name ']' '.' IDENTIFIER '{' tree '}'
+    : ('[' selector_pattern+ ']')+ '{' tree '}'
+    | ('[' selector_pattern+ ']')+ '.' IDENTIFIER '{' tree '}'
     ;
