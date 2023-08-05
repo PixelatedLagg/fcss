@@ -1,5 +1,6 @@
 from libs.fcssParser import fcssParser
 from libs.fcssParserVisitor import fcssParserVisitor
+from typing import *
 
 
 unary_operands = {
@@ -28,7 +29,16 @@ operations = {
 }
 
 
-class fcssVisitor(fcssParserVisitor):    
+class fcssVisitor(fcssParserVisitor):
+    def visitMain_tree(self, ctx: fcssParser.Main_treeContext):
+        instructions = []
+
+        for child in ctx.children:
+            if isinstance(child, fcssParser.SelectorContext):
+                instructions.append(self.visitSelector(child))
+        
+        return instructions
+
     def visitTree(self, ctx: fcssParser.TreeContext):
         if not ctx:
             return []
@@ -52,13 +62,17 @@ class fcssVisitor(fcssParserVisitor):
         attributes = ctx.IDENTIFIER(None)
         return {'Attribute': [attribute.getText() for attribute in attributes]}
     
-    def visitFuncton_call(self, ctx: fcssParser.Function_callContext):
+    def visitFunction_call(self, ctx: fcssParser.Function_callContext):
         attributes = self.visitAttribute(ctx.attribute())
-        return {'Call': {**attributes, 'Parameters': ctx.params}}
+
+        ## TODO: Function parameters
+        return {'Call': {**attributes, 'Parameters': []}}
 
     def visitAtom(self, ctx: fcssParser.AtomContext):
         if (attr := ctx.attribute()):
             return self.visitAttribute(attr)
+        elif (func_c := ctx.function_call()):
+            return self.visitFunction_call(func_c)
         elif ctx.NULL():
             return None
         elif (integral := ctx.INTEGRAL()):
@@ -161,9 +175,36 @@ class fcssVisitor(fcssParserVisitor):
     ## Visitors for selectors
 
     def visitSelector_name(self, ctx: fcssParser.Selector_nameContext):
-        selectors = {'Path': []}
+        if ctx.token:
+            if ctx.token.text == '.':
+                return {'id': ctx.IDENTIFIER().getText()}
+            return {'class': ctx.IDENTIFIER().getText()}
 
-        for child in ctx.children:
-            print(child)
+        elif ctx.wildcard:
+            return {'wildcard': ctx.wildcard.text}
+        return {'element': ctx.IDENTIFIER().getText()}
+    
+    def visitSelector_pattern(self, ctx: fcssParser.Selector_patternContext):
+        if ctx.unary:
+            return {'Not': self.visitSelector_name(*ctx.selector_name())}
+        
+        if not ctx.operand:
+            return self.visitSelector_name(*ctx.selector_name())
+        
+        left, right = map(self.visitSelector_name, ctx.selector_name())
+        if ctx.operand.text == '||':
+            return {'Or': [left, right]}
+        return {'And': [left, right]}
 
-        return selectors
+    def visitManySelector_pattern(self, ctx: List[fcssParser.Selector_patternContext]):
+        paths = []
+
+        for path in ctx:
+            paths.append(self.visitSelector_pattern(path))
+        return {'Paths': paths}
+    
+    def visitSelector(self, ctx: fcssParser.SelectorContext):
+        selector = self.visitManySelector_pattern(ctx.selector_pattern())
+        instructions = self.visitTree(ctx.tree())
+
+        return {'Selector': {**selector, 'Instructions': instructions}}
