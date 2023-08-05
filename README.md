@@ -49,3 +49,39 @@ Operator | Description
 ---|---
 `value^` | Round `value` to the nearest whole number (rounding up).
 `value_` | Round `value` to the nearest whole number (rounding down).
+
+### Selectors
+
+Instead of the traditional CSS selectors and operators, FCss uses a unique system akin to array indexing to select certain elements. Below are a few examples:
+
+CSS:
+```css
+#someID { }
+
+#someID + .someClassFollowingSomeID { }
+
+.someClass.anotherClass { }
+
+.thisClass > .followedByThisClass { }
+```
+
+FCss:
+```fcss
+[#someID].init { }
+
+[#someID][.someClassFollowingSomeID].init { }
+
+[.someClass && .anotherClass].init { }
+
+[.thisClass][.followedByThisClass].init { }
+```
+
+Here are some things CSS selectors can't do:
+
+```fcss
+[.someClass || #anotherID].init { } //select elements where class == someClass or id == anotherID
+
+[!.notThisClass].init { } //select elements where class != notThisClass
+```
+
+Additionally, all selectors are stackable - including the wildcard selector `*`.
