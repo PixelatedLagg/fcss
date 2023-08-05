@@ -1,0 +1,9 @@
+// Generic styles file for testing the fcss parser
+
+[div][p].init {
+    width = Screen.width * .90;
+
+    if (this.last()) {
+        border.bottom += 3;
+    }
+}

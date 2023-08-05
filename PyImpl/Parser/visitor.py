@@ -177,8 +177,8 @@ class fcssVisitor(fcssParserVisitor):
     def visitSelector_name(self, ctx: fcssParser.Selector_nameContext):
         if ctx.token:
             if ctx.token.text == '.':
-                return {'id': ctx.IDENTIFIER().getText()}
-            return {'class': ctx.IDENTIFIER().getText()}
+                return {'class': ctx.IDENTIFIER().getText()}
+            return {'id': ctx.IDENTIFIER().getText()}
 
         elif ctx.wildcard:
             return {'wildcard': ctx.wildcard.text}
@@ -206,5 +206,6 @@ class fcssVisitor(fcssParserVisitor):
     def visitSelector(self, ctx: fcssParser.SelectorContext):
         selector = self.visitManySelector_pattern(ctx.selector_pattern())
         instructions = self.visitTree(ctx.tree())
+        event = getattr(ctx.IDENTIFIER(), 'text', None) or 'init'
 
-        return {'Selector': {**selector, 'Instructions': instructions}}
+        return {'Selector': {**selector, 'Instructions': instructions, 'Event': event}}

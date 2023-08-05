@@ -1,10 +1,4 @@
 *.vscode
-*cmake
-*libs
+*__pycache__
 *.antlr4
-
-## Exclusions
-!cmake/antlr4-generator.cmake.in
-!cmake/antlr4-runtime.cmake.in
-!cmake/ExternalAntlr4Cpp.make
-!cmake/FindANTLR.cmake
+*libs
