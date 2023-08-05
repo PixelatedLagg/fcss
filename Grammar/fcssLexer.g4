@@ -15,8 +15,7 @@ IDENTIFIER
 // Data Types
 
 INTEGRAL
-    : [1-9][0-9]*
-    | '0'+
+    : ('0')*?[1-9][0-9]*
     ;
 
 BOOLEAN
