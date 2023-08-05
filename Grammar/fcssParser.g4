@@ -4,109 +4,88 @@ options {
     tokenVocab=fcssLexer;
 }
 
-// Prog - Defines how code in the file may be written
-prog
-    : generic_style
+// Trees
+tree
+    : (assign_stmt | append_stmt | conditional_block | selector)*
     ;
 
+// Basic atoms/expressions
 
-attr
-    : NAME ('.' NAME)+
+attribute
+    : IDENTIFIER ('.' IDENTIFIER)*
     ;
 
-name_or_attr
-    : attr | NAME
+// TODO: Write param spec for passing parameters in functions
+param_spec
+    : ((atom)*? (',' (atom)*?)+ (',')?)
+    ;
+
+function_call
+    : attribute '(' param_spec ')'
+    ;
+
+atom
+    : attribute
+    | function_call
+    | NULL
+    | INTEGRAL
+    | DOUBLE
+    | BOOLEAN
+    | STRING
+    ;
+
+expr
+    : unary_left=('+'|'-'|'_'|'^'|'!') right=expr
+    | left=expr op='**' right=expr
+    | left=expr op=('*'|'/'|'%') right=expr
+    | left=expr op=('+'|'-') right=expr
+    | left=expr op=('>='|'>') right=expr
+    | left=expr op=('<='|'<') right=expr
+    | left=expr op=('=='|'!=') right=expr
+    | left=expr op=('||'|'&&') right=expr
+    | atom
+    | '(' atom ')'
+    | '(' expr ')'
     ;
 
 // Statements
 
 assign_stmt
-    : name_or_attr '=' expr ';'
+    : attribute '=' expr ';'
+    ;
+
+append_stmt
+    : attribute op=('+='|'-='|'*='|'/='|'**='|'%=') expr ';'
     ;
 
 if_stmt
-    : 'if' expr '{' block '}'
-    | 'if' '(' expr ')' '{' block '}'
+    : 'if' expr '{' tree '}'
+    | 'if' '(' expr ')' '{' tree '}'
     ;
 
 else_if_stmt
-    : 'else if' expr '{' block '}'
-    | 'else if' expr '{' block '}'
+    : 'else if' expr '{' tree '}'
+    | 'else if' '(' expr ')' '{' tree '}'
     ;
 
 else_stmt
-    : 'else' '{' block '}'
+    : 'else' '{' tree '}'
     ;
 
-if_else_block
-    : if_stmt (else_if_stmt)*? (else_stmt)?
+conditional_block
+    : if_stmt (else_if_stmt)* (else_stmt)?
     ;
 
-block
-    : assign_stmt
-    | if_else_block
-    ;
 
-// Selectors
+// Selectors/Functions
 
-selector_type
-    : '#'
-    | '.'
+selector_name
+    : token=('.'|'#') IDENTIFIER
+    | IDENTIFIER
+    | wildcard=('*'|'**')
     ;
 
 selector
-    : ('[' selector_type? NAME ']')+
-    | ('[' '*' ']')+
-    | ('[' '*' '*' ']')+
-    ;
-
-selector_meth
-    : selector '.' NAME
-    | selector '.' NAME parameters
-    | selector
-    ;
-
-// Style Defs
-
-generic_style
-    : selector_meth '{' block '}'
-    ;
-
-// Function Parameters
-parameters
-    : '(' param_spec ')'
-    ;
-
-argslist
-    : (NAME ',')+ NAME?
-    ;
-
-param_spec
-    : NAME
-    | argslist
-    ;
-
-passable_arglist
-    : argslist
-    ;
-
-// Expressions
-
-atoms
-    : NULL
-    | BOOLEAN
-    | INTEGER
-    | DOUBLE
-    | STRING
-    | name_or_attr
-    ;
-
-expr
-    : expr '**' expr
-    | ('+'|'-'|'_'|'^'|'!') '('? expr ')'?
-    | expr ('*'|'/'|'%') expr
-    | expr ('+'|'-') expr
-    | expr ('>'|'>='|'<'|'<='|'!='|'==') expr
-    | atoms
-    | '(' atoms ')'
+    : '[' selector_name ']' '{' tree '}'
+    | '[' selector_name ']' '.' IDENTIFIER '{' tree '}'
     ;

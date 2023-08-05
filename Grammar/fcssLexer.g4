@@ -1,31 +1,22 @@
 lexer grammar fcssLexer;
 
-NAME
-    : [a-zA-Z_]
-    | [a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]*
+// Keywords
+TRUE:       'true';
+FALSE:      'false';
+IF:         'if';
+ELSEIF:     'else if';
+ELSE:       'else';
+NULL:       'null';
+
+IDENTIFIER
+    : [a-zA-Z_]([a-zA-Z0-9_-])*([a-zA-Z0-9_])*
     ;
 
-// Kw
-TRUE:           'true';
-FALSE:          'false';
-IF:             'if';
-ELSE:           'else';
-ELSE_IF:        'else if';
-NULL:           'null';
+// Data Types
 
-INTEGER
-    : [1-9] INTEGRAL*
+INTEGRAL
+    : [1-9][0-9]*
     | '0'+
-    ;
-
-STRING
-    : SINGLE_STRING
-    | DOUBLE_STRING
-    ;
-
-DOUBLE
-    : INTEGRAL? FRACTION
-    | INTEGRAL '.'
     ;
 
 BOOLEAN
@@ -33,8 +24,18 @@ BOOLEAN
     | FALSE
     ;
 
-// Symbols
+DOUBLE
+    : INTEGRAL '.'
+    | INTEGRAL '.' INTEGRAL
+    | '.' INTEGRAL
+    ;
 
+STRING
+    : '\'' (~[\\\n\r\f])* '\''
+    | '"' (~[\\\n\r\f])* '"'
+    ;
+
+// Symbols
 DOT:            '.';
 COMMA:          ',';
 SEMI_COLON:     ';';
@@ -59,6 +60,14 @@ MOD_OP:         '%';
 FLOOR_OP:       '_';
 CEIL_OP:        '^';
 
+// Appendable Ops
+AP_ADD_OP:      '+=';
+AP_SUB_OP:      '-=';
+AP_MUL_IP:      '*=';
+AP_DIV_OP:      '/=';
+AP_POW_OP:      '**=';
+AP_MOD_OP:      '%=';
+
 // Comparity Operations
 
 GREATER:        '>';
@@ -73,38 +82,8 @@ AND:            '&&';
 OR:             '||';
 NOT:            '!';
 
-// Fragments
+// Comments
+COMMENT:        '//' ~[\n\r\f]* -> skip;
 
-fragment SINGLE_STRING
-    : '\'' ( ~[\\\r\n\f'] )* '\''
-    ;
-
-fragment DOUBLE_STRING
-    : '"' ( ~[\\\r\n\f"] )* '"'
-    ;
-
-// Numbers
-
-fragment DIGIT
-    : [0-9]
-    ;
-
-fragment INTEGRAL
-    : DIGIT+
-    ;
-
-fragment FRACTION
-    : '.' INTEGRAL
-    ;
-
-// Ignorable elements
-
-fragment SPACES
-    : [ \t]+
-    ;
-
-fragment COMMENT
-    : '//' ~[\r\n\f]*
-    ;
-
-WS: [ \n\t\r]+ -> skip;
+// Elements to skip
+WS:             [ \n\t\r]+ -> skip;
