@@ -1,27 +1,53 @@
-from antlr4 import *
+from antlr4 import InputStream, CommonTokenStream
 from libs.fcssLexer import fcssLexer
 from libs.fcssParser import fcssParser
 from visitor import fcssVisitor
-from pprint import pprint
+from json import dumps
+import argparse
+from sys import argv
 
-## Do need to rewrite this for CLI handling later
-code = """
-// Sets width of element to 90% of the screen
-// If its the last element in the selector adds a bottom border with width=3
+parser = argparse.ArgumentParser(
+    prog='fcssParser',
+    description='Processes a .fcss file transforming it into an executable instruction set',
+)
 
-[div][#my_class] {
-    width = Screen.width * .90;
-    if (this.last()) {
-        border.bottom += 3;
-    }
-}
-"""
+parser.add_argument(
+    '--I', '-input', type=argparse.FileType(encoding='utf-8'), dest='input',
+    help='Input file to parse', nargs=1, required=True
+)
 
-stream = InputStream(code)
-lexer = fcssLexer(stream)
-token_stream = CommonTokenStream(lexer)
-parser = fcssParser(token_stream)
-tree = parser.tree()
-visitor = fcssVisitor()
+parser.add_argument(
+    '--O', '-output', type=str, dest='output', default='output.json',
+    help='File to output results to', required=False
+)
 
-pprint(visitor.visit(tree), indent=4, sort_dicts=False)
+parser.add_argument(
+    '--F', '-format', type=str, choices=('json',), dest='format',
+    help='Format to save file as', required=False
+)
+
+if __name__ == '__main__':
+    v = parser.parse_args(argv[1:])
+    d = vars(v)
+
+    if not (d['input'] or d['output']):
+        parser.print_help()
+        exit(0)
+    
+    if not d['input']:
+        print('Error: No input file provided')
+        exit(1)
+    
+    stream = InputStream(d['input'][0].read())
+    lexer = fcssLexer(stream)
+    token_stream = CommonTokenStream(lexer)
+    parser = fcssParser(token_stream)
+
+    visitor = fcssVisitor()
+    tree = parser.main_tree()
+    r = visitor.visit(tree)
+
+    with open(d['output'], 'w') as fp:
+        fp.write(dumps(r, indent=4))
+
+    print('Saved output to:', d['output'])
