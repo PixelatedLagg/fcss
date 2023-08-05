@@ -40,3 +40,12 @@ Method | Description
 ---|---
 `set(name, value)` | If a variable with `name` exists, set the value as `value`. If not, create a variable named `name` and set its value to `value`.
 `get(name)` | If a variable with `name` exists, return its value. If not, return NULL.
+
+### Special Operators
+
+On top of having the traditional arithmetic and comparison operators, Fcss also employs the following:
+
+Operator | Description
+---|---
+`value^` | Round `value` to the nearest whole number (rounding up).
+`value_` | Round `value` to the nearest whole number (rounding down).
