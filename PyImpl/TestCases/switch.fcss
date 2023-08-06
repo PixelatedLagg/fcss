@@ -1,0 +1,19 @@
+// Test case for the switch/case syntax
+
+[div][p].init {
+
+    switch (this.border.bottom) {
+
+        case 0 {
+            this.border.bottom += 3;
+        }
+        case 1 {
+            this.border.bottom = 0;
+        }
+        case 2 {
+            this.border.bottom = 1;
+        }
+
+    }
+
+}
