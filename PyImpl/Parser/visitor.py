@@ -46,13 +46,17 @@ class fcssVisitor(fcssParserVisitor):
         instructions = []
 
         for child in ctx.children:
-            child_class = child.__class__
-            if child_class == fcssParser.Assign_stmtContext:
+            if isinstance(child, fcssParser.Assign_stmtContext):
                 instructions.append(self.visitAssign_stmt(child))
-            elif child_class == fcssParser.Append_stmtContext:
+
+            elif isinstance(child, fcssParser.Append_stmtContext):
                 instructions.append(self.visitAppend_stmt(child))
-            elif child_class == fcssParser.Conditional_blockContext:
+
+            elif isinstance(child, fcssParser.Conditional_blockContext):
                 instructions.append(self.visitConditional_block(child))
+            
+            elif isinstance(child, fcssParser.SwitchContext):
+                instructions.append(self.visitSwitch(child))
 
         return instructions
     
@@ -103,7 +107,7 @@ class fcssVisitor(fcssParserVisitor):
 
     def visitAssign_stmt(self, ctx: fcssParser.Assign_stmtContext):
         attributes = self.visitAttribute(ctx.attribute())
-        return {'Assign': {'name': attributes, 'value': self.visitExpr(ctx.expr())}}
+        return {'Assign': {'Name': attributes, 'Value': self.visitExpr(ctx.expr())}}
     
     def visitAppend_stmt(self, ctx: fcssParser.Append_stmtContext):
         attributes = self.visitAttribute(ctx.attribute())
@@ -111,33 +115,33 @@ class fcssVisitor(fcssParserVisitor):
 
         op = ctx.op.text
         if (op == '+='):
-            return {'Assign': {'name': attributes, 
-                               'value': {'Add': {'left': attributes, 'right': expr}}
+            return {'Assign': {'Name': attributes, 
+                               'Value': {'Add': {'left': attributes, 'right': expr}}
                               }
                    }
         elif (op == '-='):
-            return {'Assign': {'name': attributes, 
-                               'value': {'Subtract': {'left': attributes, 'right': expr}}
+            return {'Assign': {'Name': attributes, 
+                               'Value': {'Subtract': {'left': attributes, 'right': expr}}
                               }
                    }
         elif (op == '*='):
-            return {'Assign': {'name': attributes, 
-                               'value': {'Multiply': {'left': attributes, 'right': expr}}
+            return {'Assign': {'Name': attributes, 
+                               'Value': {'Multiply': {'left': attributes, 'right': expr}}
                               }
                    }
         elif (op == '/='):
-            return {'Assign': {'name': attributes, 
-                               'value': {'Divide': {'left': attributes, 'right': expr}}
+            return {'Assign': {'Name': attributes, 
+                               'Value': {'Divide': {'left': attributes, 'right': expr}}
                               }
                    }
         elif (op == '**='):
-            return {'Assign': {'name': attributes, 
-                               'value': {'Power': {'left': attributes, 'right': expr}}
+            return {'Assign': {'Name': attributes, 
+                               'Value': {'Power': {'left': attributes, 'right': expr}}
                               }
                    }
         elif (op == '%='):
-            return {'Assign': {'name': attributes, 
-                               'value': {'Modulo': {'left': attributes, 'right': expr}}
+            return {'Assign': {'Name': attributes, 
+                               'Value': {'Modulo': {'left': attributes, 'right': expr}}
                               }
                    }
         raise ValueError('Unknown appendage operation')
@@ -146,18 +150,18 @@ class fcssVisitor(fcssParserVisitor):
         expr = self.visitExpr(ctx.expr())
         instructions = self.visitTree(ctx.tree())
 
-        return {'If': {'condition': expr, 'instructions': instructions}}
+        return {'If': {'Condition': expr, 'Instructions': instructions}}
     
     def visitElse_if_stmt(self, ctx: fcssParser.Else_if_stmtContext):
         expr = self.visitExpr(ctx.expr())
         instructions = self.visitTree(ctx.tree())
 
-        return {'ElseIf': {'condition': expr, 'instructions': instructions}}
+        return {'ElseIf': {'Condition': expr, 'Instructions': instructions}}
     
     def visitElse_stmt(self, ctx: fcssParser.Else_stmtContext):
         instructions = self.visitTree(ctx.tree())
 
-        return {'Else': {'instructions': instructions}}
+        return {'Else': {'Instructions': instructions}}
     
     def visitConditional_block(self, ctx: fcssParser.Conditional_blockContext):
         instr = {'ConditionalBlock': 
@@ -177,12 +181,12 @@ class fcssVisitor(fcssParserVisitor):
     def visitSelector_name(self, ctx: fcssParser.Selector_nameContext):
         if ctx.token:
             if ctx.token.text == '.':
-                return {'class': ctx.IDENTIFIER().getText()}
-            return {'id': ctx.IDENTIFIER().getText()}
+                return {'Class': ctx.IDENTIFIER().getText()}
+            return {'Id': ctx.IDENTIFIER().getText()}
 
         elif ctx.wildcard:
-            return {'wildcard': ctx.wildcard.text}
-        return {'element': ctx.IDENTIFIER().getText()}
+            return {'WildCard': ctx.wildcard.text}
+        return {'Element': ctx.IDENTIFIER().getText()}
     
     def visitSelector_pattern(self, ctx: fcssParser.Selector_patternContext):
         if ctx.unary:
@@ -209,3 +213,21 @@ class fcssVisitor(fcssParserVisitor):
         event = getattr(ctx.IDENTIFIER(), 'text', None) or 'init'
 
         return {'Selector': {**selector, 'Instructions': instructions, 'Event': event}}
+    
+    ## Switch case
+
+    def visitCase(self, ctx: fcssParser.CaseContext):
+        expr = self.visitExpr(ctx.expr())
+        tree = self.visitTree(ctx.tree())
+
+        return {'Case': {'Condition': expr, 'Instructions': tree}}
+    
+    def visitSwitch(self, ctx: fcssParser.SwitchContext):
+        expr = self.visitExpr(ctx.expr())
+        cases = []
+
+        if (l := ctx.case()):
+            for case in l:
+                i = self.visitCase(case)
+                cases.append(i)
+        return {'Switch': {'Condition': expr, 'Cases': cases}}
