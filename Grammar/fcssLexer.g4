@@ -7,6 +7,8 @@ IF:         'if';
 ELSEIF:     'else if';
 ELSE:       'else';
 NULL:       'null';
+SWITCH:     'switch';
+CASE:       'case';
 
 IDENTIFIER
     : [a-zA-Z_]([a-zA-Z0-9_-])*([a-zA-Z0-9_])*
@@ -15,7 +17,7 @@ IDENTIFIER
 // Data Types
 
 INTEGRAL
-    : ('0')*?[1-9][0-9]*
+    : [0-9]+
     ;
 
 BOOLEAN
