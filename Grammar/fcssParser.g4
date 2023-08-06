@@ -6,7 +6,7 @@ options {
 
 // Trees
 tree
-    : (assign_stmt | append_stmt | conditional_block)*
+    : (assign_stmt | append_stmt | conditional_block | switch)*
     ;
 
 main_tree
@@ -96,4 +96,15 @@ selector_pattern
 selector
     : ('[' selector_pattern+ ']')+ '{' tree '}'
     | ('[' selector_pattern+ ']')+ '.' IDENTIFIER '{' tree '}'
+    ;
+
+// Switch Case?
+switch
+    : 'switch' expr '{' (case)*? '}'
+    | 'switch' '(' expr ')' '{' (case)*? '}'
+    ;
+
+case
+    : 'case' expr '{' tree '}'
+    | 'case' '(' expr ')' '{' tree '}'
     ;
