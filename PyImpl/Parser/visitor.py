@@ -94,6 +94,8 @@ class fcssVisitor(fcssParserVisitor):
         return ctx.STRING().getText()[1:-1]
 
     def visitExpr(self, ctx: fcssParser.ExprContext):
+        if not ctx:
+            return
         if (atom := ctx.atom()):
             return self.visitAtom(atom)
         
@@ -236,7 +238,11 @@ class fcssVisitor(fcssParserVisitor):
     ## Switch case
 
     def visitCase(self, ctx: fcssParser.CaseContext):
-        expr = self.visitExpr(ctx.expr())
+        e = ctx.expr()
+        if not e:
+            expr = '$NoMatch'
+        else:
+            expr = self.visitExpr(e)
         tree = self.visitTree(ctx.tree())
 
         return {'Case': {'Condition': expr, 'Instructions': tree}}
@@ -244,9 +250,14 @@ class fcssVisitor(fcssParserVisitor):
     def visitSwitch(self, ctx: fcssParser.SwitchContext):
         expr = self.visitExpr(ctx.expr())
         cases = []
+        c_n = []        ## Validate whether 2 no expression cases are given
 
         if (l := ctx.case()):
             for case in l:
                 i = self.visitCase(case)
+                if i['Case']['Condition'] in c_n:
+                    raise ValueError(f'Repeated case condition: {i["Case"]["Condition"]}')
+                c_n.append(i['Case']['Condition'])
+
                 cases.append(i)
         return {'Switch': {'Condition': expr, 'Cases': cases}}
