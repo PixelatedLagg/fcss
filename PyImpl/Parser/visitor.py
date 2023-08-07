@@ -31,6 +31,9 @@ operations = {
 
 class fcssVisitor(fcssParserVisitor):
     def visitMain_tree(self, ctx: fcssParser.Main_treeContext):
+        if not ctx or not ctx.children:
+            return []
+
         instructions = []
 
         for child in ctx.children:
@@ -40,7 +43,7 @@ class fcssVisitor(fcssParserVisitor):
         return instructions
 
     def visitTree(self, ctx: fcssParser.TreeContext):
-        if not ctx:
+        if not ctx or not ctx.children:
             return []
 
         instructions = []
@@ -179,6 +182,9 @@ class fcssVisitor(fcssParserVisitor):
     ## Visitors for selectors
 
     def visitSelector_name(self, ctx: fcssParser.Selector_nameContext):
+        if not ctx:
+            return
+
         if ctx.token:
             if ctx.token.text == '.':
                 return {'Class': ctx.IDENTIFIER().getText()}
@@ -189,16 +195,29 @@ class fcssVisitor(fcssParserVisitor):
         return {'Element': ctx.IDENTIFIER().getText()}
     
     def visitSelector_pattern(self, ctx: fcssParser.Selector_patternContext):
+        ## Helps deal with recursive stops
+        if isinstance(ctx, dict):
+            return ctx
+
         if ctx.unary:
             return {'Not': self.visitSelector_name(*ctx.selector_name())}
         
         if not ctx.operand:
-            return self.visitSelector_name(*ctx.selector_name())
+            if pat := ctx.selector_pattern():
+                if len(pat) > 1:
+                    return self.visitManySelector_pattern(pat)
+                return self.visitSelector_pattern(pat[0])
+            return self.visitSelector_name(ctx.selector_name())
         
-        left, right = map(self.visitSelector_name, ctx.selector_name())
-        if ctx.operand.text == '||':
-            return {'Or': [left, right]}
-        return {'And': [left, right]}
+        left, _, *children = ctx.children
+        left = self.visitSelector_pattern(left)
+        if len(children) == 1:
+            right = self.visitSelector_pattern(children[0])
+            if ctx.operand.text == '||':
+                return {'Or': {'left': left, 'right': right}}
+            return {'And': {'left': left, 'right': right}}
+        
+        raise RuntimeError('Something went wrong here')
 
     def visitManySelector_pattern(self, ctx: List[fcssParser.Selector_patternContext]):
         paths = []
