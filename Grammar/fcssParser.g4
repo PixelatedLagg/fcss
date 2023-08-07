@@ -102,16 +102,11 @@ selector
 
 // Switch Case?
 switch
-    : 'switch' expr '{' (case | case_no_expr)*? '}'
-    | 'switch' '(' expr ')' '{' (case | case_no_expr)*? '}'
+    : 'switch' expr '{' (case)*? '}'
+    | 'switch' '(' expr ')' '{' (case)*? '}'
     ;
 
 case
-    : 'case' expr '{' tree '}'
-    | 'case' '(' expr ')' '{' tree '}'
-    ;
-
-case_no_expr
-    : 'case' '{' tree '}'
-    | 'case' '(' ')' '{' tree '}' 
+    : 'case' (expr)? '{' tree '}'
+    | 'case' '(' (expr)? ')' '{' tree '}'
     ;
