@@ -1,0 +1,6 @@
+// Test cases for validating complex selectors
+
+[.class || (#id && .otherClass)].init {}
+[.class || (div && #id)][div].init {}
+[.class || .other-class || .my_class || .important-class].init {}
+[((.class || .other-class) && (#id)) || #special-id].init {}
