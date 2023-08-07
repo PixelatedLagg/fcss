@@ -1,5 +1,5 @@
-# FCss - Functional CSS
-FCss is a superset of the classic CSS language and aims to provide more functionality
+# FCSS - Functional CSS
+FCSS is a superset of the classic CSS language and aims to provide more functionality
 
 ## Example
 
@@ -34,7 +34,7 @@ Top_Down | This makes the element render below the lowest element. Basically the
 
 ### Variables
 
-FCss enables the developer to easily create and manage variables with methods. Additionally, FCss features a garbage collector, so no need to manage variable memory.
+FCSS enables the developer to easily create and manage variables with methods. Additionally, FCSS features a garbage collector, so no need to manage variable memory.
 
 Method | Description
 ---|---
@@ -43,7 +43,7 @@ Method | Description
 
 ### Special Operators
 
-On top of having the traditional arithmetic and comparison operators, Fcss also employs the following:
+On top of having the traditional arithmetic and comparison operators, FCSS also employs the following:
 
 Operator | Description
 ---|---
@@ -52,7 +52,7 @@ Operator | Description
 
 ### Selectors
 
-Instead of the traditional CSS selectors and operators, FCss uses a unique system akin to array indexing to select certain elements. Below are a few examples:
+Instead of the traditional CSS selectors and operators, FCSS uses a unique system akin to array indexing to select certain elements. Below are a few examples:
 
 CSS:
 ```css
@@ -65,7 +65,7 @@ CSS:
 .thisClass > .followedByThisClass { }
 ```
 
-FCss:
+FCSS:
 ```fcss
 [#someID].init { }
 
@@ -81,7 +81,7 @@ Here are some things CSS selectors can't do:
 ```fcss
 [.someClass || #anotherID].init { } //select elements where class == someClass or id == anotherID
 
-[!.notThisClass].init { } //select elements where class != notThisClass
+[!(.notThisClass)].init { } //select elements where class != notThisClass
 ```
 
 Additionally, all selectors are stackable - including the wildcard selector `*`.
