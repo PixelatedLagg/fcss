@@ -10,7 +10,7 @@ tree
     ;
 
 main_tree
-    : selector
+    : (selector)*
     ;
 
 // Basic atoms/expressions
@@ -86,11 +86,13 @@ selector_name
     ;
 
 selector_pattern
-    : selector_name operand='||' selector_name
-    | selector_name operand='&&' selector_name
-    | unary='!' selector_name
-    | unary='!' '(' selector_name ')'
+    : selector_pattern (operand='||' selector_pattern)+
+    | selector_pattern (operand='&&' selector_pattern)+
+    | unary='!' selector_pattern
+    | unary='!' '(' selector_pattern ')'
     | selector_name
+    | '(' selector_name ')'
+    | '(' selector_pattern ')'
     ;
 
 selector
@@ -100,11 +102,16 @@ selector
 
 // Switch Case?
 switch
-    : 'switch' expr '{' (case)*? '}'
-    | 'switch' '(' expr ')' '{' (case)*? '}'
+    : 'switch' expr '{' (case | case_no_expr)*? '}'
+    | 'switch' '(' expr ')' '{' (case | case_no_expr)*? '}'
     ;
 
 case
     : 'case' expr '{' tree '}'
     | 'case' '(' expr ')' '{' tree '}'
+    ;
+
+case_no_expr
+    : 'case' '{' tree '}'
+    | 'case' '(' ')' '{' tree '}' 
     ;
