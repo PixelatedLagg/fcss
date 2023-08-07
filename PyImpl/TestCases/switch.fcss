@@ -14,6 +14,17 @@
             this.border.bottom = 1;
         }
 
+        // Called when no matches are found
+        case {
+            this.border.bottom = 0.5;
+        }
+
+        // Uncommenting this will raise an error when parsing
+        // Cannot repeat the same case condition more then once
+        // case {
+        //     this.border.bottom = 0.5;    
+        // }
+
     }
 
 }
