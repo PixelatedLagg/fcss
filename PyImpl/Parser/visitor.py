@@ -31,16 +31,16 @@ operations = {
 
 class fcssVisitor(fcssParserVisitor):
     def visitMain_tree(self, ctx: fcssParser.Main_treeContext):
-        if not ctx or not ctx.children:
-            return []
+        d = dict(Imports=list(), Constants=dict(), Functions=dict(), Selectors=list())
 
-        instructions = []
+        if not ctx or not ctx.children:
+            return d
 
         for child in ctx.children:
             if isinstance(child, fcssParser.SelectorContext):
-                instructions.append(self.visitSelector(child))
+                d['Selectors'].append(self.visitSelector(child))
         
-        return instructions
+        return d
 
     def visitTree(self, ctx: fcssParser.TreeContext):
         if not ctx or not ctx.children:
