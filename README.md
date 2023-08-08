@@ -1,5 +1,5 @@
 # FCSS - Functional CSS
-FCSS is a superset of the classic CSS language and aims to provide more functionality
+FCSS is a superset of the classic CSS language and aims to provide more functionality.
 
 ## Example
 
@@ -85,3 +85,21 @@ Here are some things CSS selectors can't do:
 ```
 
 Additionally, all selectors are stackable - including the wildcard selector `*`.
+
+### Conditionals
+
+Unlike CSS, FCSS features conditionals. The typical `if`, `else`, `if else`, and `switch` statements are included. With the `switch` in particular, the syntax is as follows:
+
+```fcss
+switch (value)
+{
+    case constValue:
+    {
+        //value == constValue
+    }
+    case
+    {
+        //value != any case
+    }
+}
+```
