@@ -103,3 +103,48 @@ switch (value)
     }
 }
 ```
+
+## Implementing in Browsers
+
+Obviously, FCSS means nothing without a browser to render it. The FCSS compiler will run through all dependencies and return a JSON file of all the relevant styling information, along with any dynamic instructions.
+
+Sample FCSS:
+```fcss
+[.class || .other-class || .my_class || .important-class].init { }
+```
+
+Output JSON:
+```json
+{
+    "Selector": {
+        "Paths": [
+            {
+                "Or": {
+                    "left": {
+                        "Class": "class"
+                    },
+                    "right": {
+                        "Or": {
+                            "left": {
+                                "Class": "other-class"
+                            },
+                            "right": {
+                                "Or": {
+                                    "left": {
+                                        "Class": "my_class"
+                                    },
+                                    "right": {
+                                        "Class": "important-class"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "Instructions": [],
+        "Event": "init"
+    }
+}
+```
