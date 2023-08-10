@@ -13,8 +13,8 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    '--I', '-input', type=argparse.FileType(encoding='utf-8'), dest='input',
-    help='Input file to parse', nargs=1, required=True
+    'input', type=argparse.FileType(encoding='utf-8'),
+    help='Input file to parse', nargs=1, metavar='I'
 )
 
 parser.add_argument(
@@ -42,6 +42,8 @@ if __name__ == '__main__':
     
     if d['output'].startswith('?') and d['compress']:
         d['output'] = d['output'].split('.')[0][1:] + '.Zlib'
+    elif d['output'].startswith('?'):
+        d['output'] = d['output'][1:]
 
     if not d['input']:
         print('Error: No input file provided')
