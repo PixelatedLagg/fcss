@@ -1,0 +1,5 @@
+import 'generic.fcss';
+
+[div].init {
+    border.bottom += 1;
+}

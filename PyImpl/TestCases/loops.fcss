@@ -1,0 +1,14 @@
+[div][p].init {
+
+    c = 0;
+    while (c < this.lines().length) {
+        // Doing some stuff here?
+
+        c += 1;
+    }
+}
+
+[div][h1].init {
+    // Just to verify if general function calls are working
+    this.text = gen_text();
+} 
