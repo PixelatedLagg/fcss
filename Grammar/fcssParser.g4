@@ -23,7 +23,7 @@ attribute
 extended_attribute
     : extended_attribute ('.' extended_attribute)+
     | extended_attribute '(' ')'
-    | extended_attribute '(' atom (',' atom)*? ')'
+    | extended_attribute '(' expr (',' expr)*? ')'
     | attribute
     ;
 

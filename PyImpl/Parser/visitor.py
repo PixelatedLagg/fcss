@@ -126,7 +126,7 @@ class fcssVisitor(fcssParserVisitor):
 
         e, *rep = ctx.extended_attribute()
         if e and not rep:
-            params = map(self.visitAtom, ctx.atom() or [])
+            params = map(self.visitExpr, ctx.expr() or [])
             return {'Call': {**self.visitExtended_attribute(e), 'Params': list(params)}}
         
         children = [e, *rep]
