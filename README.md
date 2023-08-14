@@ -1,5 +1,5 @@
 # FCSS - Functional CSS
-FCSS is a superset of the classic CSS language and aims to provide more functionality.
+FCSS is a superset of the classic CSS language and aims to provide more functionality. *Disclaimer: All FCSS RFC styling is taken from www.rfc-editor.org*
 
 ## Example
 
