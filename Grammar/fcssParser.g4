@@ -6,11 +6,11 @@ options {
 
 // Trees
 tree
-    : (assign_stmt | append_stmt | conditional_block | switch_stmt | while_stmt)*
+    : (assign_stmt | append_stmt | conditional_block | switch_stmt | while_stmt | return_stmt)*
     ;
 
 main_tree
-    : (import_stmt | selector_stmt)*
+    : (import_stmt | selector_stmt | function_stmt)*
     ;
 
 // Basic atoms/expressions
@@ -32,7 +32,8 @@ atom
     | NULL
     | INTEGRAL
     | DOUBLE
-    | BOOLEAN
+    | 'true'
+    | 'false'
     | STRING
     ;
 
@@ -62,6 +63,10 @@ append_stmt
 
 import_stmt
     : 'import' STRING ';'
+    ;
+
+return_stmt
+    : 'return' expr ';'
     ;
 
 // Conditionals 
@@ -123,4 +128,15 @@ selector_pattern
 selector_stmt
     : ('[' selector_pattern+ ']')+ '{' tree '}'
     | ('[' selector_pattern+ ']')+ '.' IDENTIFIER '{' tree '}'
+    ;
+
+// Functions
+
+function_tree
+    : tree
+    ;
+
+function_stmt
+    : 'function' IDENTIFIER '(' ')' '{' function_tree '}'
+    | 'function' IDENTIFIER '(' IDENTIFIER (',' IDENTIFIER)* ')' '{' function_tree '}'
     ;
