@@ -1,0 +1,7 @@
+function general_function(arg1, arg2) {
+    // Do some stuff here
+
+    return true;
+}
+
+function do_nothing() {}
