@@ -41,12 +41,18 @@ class fcssVisitor(fcssParserVisitor):
         self.functions = []
         self.selectors = []
 
+        self.function_names = []
+
+        self._logs = []
+
         if self.bp and not dp:
             self.path = '/'
 
         super().__init__()
  
     def asDict(self) -> dict:
+        
+
         return {
             'Imports': self.imports,
             'Constants': self.constants,
@@ -61,12 +67,18 @@ class fcssVisitor(fcssParserVisitor):
         for child in ctx.children:
             if isinstance(child, fcssParser.Selector_stmtContext):
                 self.selectors.append(self.visitSelector_stmt(child))
+
             elif isinstance(child, fcssParser.Import_stmtContext):
                 self.imports.append(self.visitImport_stmt(child))
+
+            elif isinstance(child, fcssParser.Function_stmtContext):
+                r = self.visitFunction_stmt(child)
+                self.functions.append(r)
+                self.function_names.append(r['Function']['Name'])
         
         return self.asDict()
 
-    def visitTree(self, ctx: fcssParser.TreeContext):
+    def visitTree(self, ctx: fcssParser.TreeContext, *, func_tree: bool = False):
         if not ctx or not ctx.children:
             return []
 
@@ -88,7 +100,15 @@ class fcssVisitor(fcssParserVisitor):
             elif isinstance(child, fcssParser.While_stmtContext):
                 instructions.append(self.visitWhile_stmt(child))
 
+            elif isinstance(child, fcssParser.Return_stmtContext):
+                if not func_tree:
+                    raise ValueError('Unknown return statement provided')
+                instructions.append(self.visitReturn_stmt(child))
+
         return instructions
+    
+    def visitFunction_tree(self, ctx: fcssParser.Function_treeContext):
+        return self.visitTree(ctx.tree(), func_tree=True)
     
     ## Imports
 
@@ -151,6 +171,9 @@ class fcssVisitor(fcssParserVisitor):
             return {'Attribute': [v]}
         return v
 
+    def visitReturn_stmt(self, ctx: fcssParser.Return_stmtContext):
+        return {'Return': self.visitExpr(ctx.expr())}
+
     def visitAtom(self, ctx: fcssParser.AtomContext):
         if (attr := ctx.extended_attribute()):
             return self.visitExtended_attribute(attr)
@@ -160,12 +183,12 @@ class fcssVisitor(fcssParserVisitor):
             return int(integral.getText())
         elif (double := ctx.DOUBLE()):
             return float(double.getText())
-        elif (boolean := ctx.BOOLEAN()):
-            if (boolean.getText() == 'true'):
-                return True
-            return False
+        elif (string := ctx.STRING()):
+            return string.getText()[1:-1]
         
-        return ctx.STRING().getText()[1:-1]
+        if ctx.getText() == 'true':
+            return True
+        return False
 
     def visitExpr(self, ctx: fcssParser.ExprContext):
         if not ctx:
@@ -343,3 +366,17 @@ class fcssVisitor(fcssParserVisitor):
         event = getattr(ctx.IDENTIFIER(), 'text', None) or 'init'
 
         return {'Selector': {**selector, 'Instructions': instructions, 'Event': event}}
+    
+    ## Functions
+
+    def visitFunction_stmt(self, ctx: fcssParser.Function_stmtContext):
+        name, *_ = ctx.IDENTIFIER()
+
+        if name.getText() in self.function_names:
+            self._logs.append('L{}: Function definition \'{}\' has been repeated'.format(name.line, name.getText()))
+        name = name.getText()
+        params = list(map(lambda x: x.getText(), ctx.IDENTIFIER()))[1:]
+
+        instr = self.visitFunction_tree(ctx.function_tree())
+
+        return {'Function': {'Name': name, 'Parameters': params, 'Instructions': instr}}
