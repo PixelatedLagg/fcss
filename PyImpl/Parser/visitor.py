@@ -1,6 +1,7 @@
-from libs.fcssParser import fcssParser
+from libs.fcssParser import fcssParser, TerminalNode
 from libs.fcssParserVisitor import fcssParserVisitor
 from typing import *
+from os.path import exists, dirname, join
 
 
 unary_operands = {
@@ -30,17 +31,40 @@ operations = {
 
 
 class fcssVisitor(fcssParserVisitor):
-    def visitMain_tree(self, ctx: fcssParser.Main_treeContext):
-        d = dict(Imports=list(), Constants=dict(), Functions=dict(), Selectors=list())
+    def __init__(self, file_path: str, bp: bool, dp: str = None) -> None:
+        self.path = file_path
+        self.bp = bp
+        self.directory = dp or dirname(self.path)
 
+        self.imports = []
+        self.constants = []
+        self.functions = []
+        self.selectors = []
+
+        if self.bp and not dp:
+            self.path = '/'
+
+        super().__init__()
+ 
+    def asDict(self) -> dict:
+        return {
+            'Imports': self.imports,
+            'Constants': self.constants,
+            'Functions': self.functions,
+            'Selectors': self.selectors
+        }
+
+    def visitMain_tree(self, ctx: fcssParser.Main_treeContext):
         if not ctx or not ctx.children:
-            return d
+            return self.asDict()
 
         for child in ctx.children:
-            if isinstance(child, fcssParser.SelectorContext):
-                d['Selectors'].append(self.visitSelector(child))
+            if isinstance(child, fcssParser.Selector_stmtContext):
+                self.selectors.append(self.visitSelector_stmt(child))
+            elif isinstance(child, fcssParser.Import_stmtContext):
+                self.imports.append(self.visitImport_stmt(child))
         
-        return d
+        return self.asDict()
 
     def visitTree(self, ctx: fcssParser.TreeContext):
         if not ctx or not ctx.children:
@@ -58,28 +82,78 @@ class fcssVisitor(fcssParserVisitor):
             elif isinstance(child, fcssParser.Conditional_blockContext):
                 instructions.append(self.visitConditional_block(child))
             
-            elif isinstance(child, fcssParser.SwitchContext):
-                instructions.append(self.visitSwitch(child))
+            elif isinstance(child, fcssParser.Switch_stmtContext):
+                instructions.append(self.visitSwitch_stmt(child))
+
+            elif isinstance(child, fcssParser.While_stmtContext):
+                instructions.append(self.visitWhile_stmt(child))
 
         return instructions
     
+    ## Imports
+
+    def visitImport_stmt(self, ctx: fcssParser.Import_stmtContext):
+        path = ctx.STRING()
+
+        if not path:
+            raise ValueError('L{}: No path provided'.format(ctx.IMPORT().line))
+        path = path.getText()[1:-1]
+
+        if path.startswith('std'):
+            _, *d = path.split('/')
+            if not d:
+                raise ValueError('L{}: Unknown stdlib'.format(ctx.IMPORT().line))
+            lib = '/'.join(d)
+
+            return {'Position': 'Std', 'Path': lib}
+        else:
+            file_loc = join(self.path, path)
+            if not exists(file_loc) and not self.bp:
+                raise ValueError('L{}: Unable to locate path: {}'.format(ctx.IMPORT().line, file_loc))
+            return {'Position': 'Local', 'Path': file_loc}
+
     ## Visitors for atoms/exprs
 
     def visitAttribute(self, ctx: fcssParser.AttributeContext):
         attributes = ctx.IDENTIFIER(None)
         return {'Attribute': [attribute.getText() for attribute in attributes]}
     
-    def visitFunction_call(self, ctx: fcssParser.Function_callContext):
-        attributes = self.visitAttribute(ctx.attribute())
+    def _visitExtended_attribute(self, ctx: fcssParser.Extended_attributeContext):
+        Tree = []
 
-        ## TODO: Function parameters
-        return {'Call': {**attributes, 'Parameters': []}}
+        if attr := ctx.attribute():
+            return self.visitAttribute(attr)
+
+        e, *rep = ctx.extended_attribute()
+        if e and not rep:
+            params = map(self.visitExpr, ctx.expr() or [])
+            return {'Call': {**self.visitExtended_attribute(e), 'Params': list(params)}}
+        
+        children = [e, *rep]
+        for child in children:
+            ## Not a function, simply an attribute
+            if not child.OPEN_PAREN():
+                Tree.extend(child.getText().split('.'))
+            else:
+                ## Now it is a function, we can recursively call
+                r = self._visitExtended_attribute(child)
+                if v := r.get('Attribute'):
+                    Tree.extend(v)
+                else:
+                    ## Call dict returned
+                    Tree.append(v)
+        return {'Attribute': Tree}
+    
+    def visitExtended_attribute(self, ctx: fcssParser.Extended_attributeContext):
+        ## Actual method cleans up mess from above
+        v = self._visitExtended_attribute(ctx)
+        if c := v.get('Call'):
+            return {'Attribute': [v]}
+        return v
 
     def visitAtom(self, ctx: fcssParser.AtomContext):
-        if (attr := ctx.attribute()):
-            return self.visitAttribute(attr)
-        elif (func_c := ctx.function_call()):
-            return self.visitFunction_call(func_c)
+        if (attr := ctx.extended_attribute()):
+            return self.visitExtended_attribute(attr)
         elif ctx.NULL():
             return None
         elif (integral := ctx.INTEGRAL()):
@@ -181,6 +255,41 @@ class fcssVisitor(fcssParserVisitor):
             instr['ConditionalBlock']['Else'] = self.visitElse_stmt(else_stmt)
         return instr
     
+    ## Switch case
+
+    def visitCase_stmt(self, ctx: fcssParser.Case_stmtContext):
+        e = ctx.expr()
+        if not e:
+            expr = '$NoMatch'
+        else:
+            expr = self.visitExpr(e)
+        tree = self.visitTree(ctx.tree())
+
+        return {'Case': {'Condition': expr, 'Instructions': tree}}
+    
+    def visitSwitch_stmt(self, ctx: fcssParser.Switch_stmtContext):
+        expr = self.visitExpr(ctx.expr())
+        cases = []
+        c_n = []        ## Validate whether 2 no expression cases are given
+
+        if (l := ctx.case()):
+            for case in l:
+                i = self.visitCase(case)
+                if i['Case']['Condition'] in c_n:
+                    raise ValueError(f'Repeated case condition: {i["Case"]["Condition"]}')
+                c_n.append(i['Case']['Condition'])
+
+                cases.append(i)
+        return {'Switch': {'Condition': expr, 'Cases': cases}}
+
+    ## While stmt
+
+    def visitWhile_stmt(self, ctx: fcssParser.While_stmtContext):
+        expr = self.visitExpr(ctx.expr())
+        tree = self.visitTree(ctx.tree())
+
+        return {'While': {'Condition': expr, 'Instructions': tree}}
+    
     ## Visitors for selectors
 
     def visitSelector_name(self, ctx: fcssParser.Selector_nameContext):
@@ -189,12 +298,12 @@ class fcssVisitor(fcssParserVisitor):
 
         if ctx.token:
             if ctx.token.text == '.':
-                return {'Class': ctx.IDENTIFIER().getText()}
-            return {'Id': ctx.IDENTIFIER().getText()}
+                return {'Type': 'Class', 'Value': ctx.IDENTIFIER().getText()}
+            return {'Type': 'Id', 'Value': ctx.IDENTIFIER().getText()}
 
         elif ctx.wildcard:
-            return {'WildCard': ctx.wildcard.text}
-        return {'Element': ctx.IDENTIFIER().getText()}
+            return {'Type': 'Wildcard', 'Value': ctx.wildcard.text}
+        return {'Type': 'Element', 'Value': ctx.IDENTIFIER().getText()}
     
     def visitSelector_pattern(self, ctx: fcssParser.Selector_patternContext):
         ## Helps deal with recursive stops
@@ -228,36 +337,9 @@ class fcssVisitor(fcssParserVisitor):
             paths.append(self.visitSelector_pattern(path))
         return {'Paths': paths}
     
-    def visitSelector(self, ctx: fcssParser.SelectorContext):
+    def visitSelector_stmt(self, ctx: fcssParser.Selector_stmtContext):
         selector = self.visitManySelector_pattern(ctx.selector_pattern())
         instructions = self.visitTree(ctx.tree())
         event = getattr(ctx.IDENTIFIER(), 'text', None) or 'init'
 
         return {'Selector': {**selector, 'Instructions': instructions, 'Event': event}}
-    
-    ## Switch case
-
-    def visitCase(self, ctx: fcssParser.CaseContext):
-        e = ctx.expr()
-        if not e:
-            expr = '$NoMatch'
-        else:
-            expr = self.visitExpr(e)
-        tree = self.visitTree(ctx.tree())
-
-        return {'Case': {'Condition': expr, 'Instructions': tree}}
-    
-    def visitSwitch(self, ctx: fcssParser.SwitchContext):
-        expr = self.visitExpr(ctx.expr())
-        cases = []
-        c_n = []        ## Validate whether 2 no expression cases are given
-
-        if (l := ctx.case()):
-            for case in l:
-                i = self.visitCase(case)
-                if i['Case']['Condition'] in c_n:
-                    raise ValueError(f'Repeated case condition: {i["Case"]["Condition"]}')
-                c_n.append(i['Case']['Condition'])
-
-                cases.append(i)
-        return {'Switch': {'Condition': expr, 'Cases': cases}}

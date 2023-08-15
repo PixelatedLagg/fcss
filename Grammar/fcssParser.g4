@@ -6,27 +6,29 @@ options {
 
 // Trees
 tree
-    : (assign_stmt | append_stmt | conditional_block | switch)*
+    : (assign_stmt | append_stmt | conditional_block | switch_stmt | while_stmt)*
     ;
 
 main_tree
-    : (selector)*
+    : (import_stmt | selector_stmt)*
     ;
 
 // Basic atoms/expressions
-
 attribute
     : IDENTIFIER ('.' IDENTIFIER)*
     ;
 
-// TODO: Write param spec for passing parameters in functions
-function_call
-    : attribute '(' ')'
+// Supports function called and left recursive methods which allow for more flexibility
+// x.y().z -> OK
+extended_attribute
+    : extended_attribute ('.' extended_attribute)+
+    | extended_attribute '(' ')'
+    | extended_attribute '(' expr (',' expr)*? ')'
+    | attribute
     ;
 
 atom
-    : attribute
-    | function_call
+    : extended_attribute
     | NULL
     | INTEGRAL
     | DOUBLE
@@ -58,6 +60,12 @@ append_stmt
     : attribute op=('+='|'-='|'*='|'/='|'**='|'%=') expr ';'
     ;
 
+import_stmt
+    : 'import' STRING ';'
+    ;
+
+// Conditionals 
+
 if_stmt
     : 'if' expr '{' tree '}'
     | 'if' '(' expr ')' '{' tree '}'
@@ -76,6 +84,23 @@ conditional_block
     : if_stmt (else_if_stmt)* (else_stmt)?
     ;
 
+// Switch Case?
+switch_stmt
+    : 'switch' expr '{' (case_stmt)*? '}'
+    | 'switch' '(' expr ')' '{' (case_stmt)*? '}'
+    ;
+
+case_stmt
+    : 'case' (expr)? '{' tree '}'
+    | 'case' '(' (expr)? ')' '{' tree '}'
+    ;
+
+// Loops
+
+while_stmt
+    : 'while' expr '{' tree '}'
+    | 'while' '(' expr ')' '{' tree '}'
+    ;
 
 // Selectors/Functions
 
@@ -95,18 +120,7 @@ selector_pattern
     | '(' selector_pattern ')'
     ;
 
-selector
+selector_stmt
     : ('[' selector_pattern+ ']')+ '{' tree '}'
     | ('[' selector_pattern+ ']')+ '.' IDENTIFIER '{' tree '}'
-    ;
-
-// Switch Case?
-switch
-    : 'switch' expr '{' (case)*? '}'
-    | 'switch' '(' expr ')' '{' (case)*? '}'
-    ;
-
-case
-    : 'case' (expr)? '{' tree '}'
-    | 'case' '(' (expr)? ')' '{' tree '}'
     ;
